@@ -7,17 +7,16 @@ on:
     branches:
       - main
 
-runs:
-  using:
-    jobs:
-      test:
-        runs-on: ubuntu-latest
-        steps:
-          - name: Repo auschecke
-            uses: actions/checkout@v4
+jobs:
+  test:
+    runs-on: ubuntu-latest
 
-          - name: Linting
-            run: echo "Hier kommt das Linting"
+    steps:
+      - name: Repo auschecke
+        uses: actions/checkout@v4
 
-          - name: Tests
-            run: echo "Hier kommen die Tests"
+      - name: Linting
+        run: echo "Hier kommt das Linting"
+
+      - name: Tests
+        run: echo "Hier kommen die Tests"
