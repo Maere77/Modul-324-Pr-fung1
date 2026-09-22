@@ -1,0 +1,16 @@
+name: actions
+
+description: actions
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repo auschecke
+        uses: actions/checkout@v4
