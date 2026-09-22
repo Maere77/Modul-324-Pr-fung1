@@ -1,37 +1,61 @@
 name: CI-3
 
-description: actions
-
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  linting:
+  lint:
+    name: Linting
     runs-on: ubuntu-latest
-
     steps:
-      - name: Repo auschecke
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci --legacy-peer-deps
+      - run: npm run lint
 
-      - name: Linting
-        run: echo "Hier kommt das Linting"
-
-  testing:
+  test:
+    name: Testing
     runs-on: ubuntu-latest
-
+    needs: lint
     steps:
-      - name: Repo auschecke
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci --legacy-peer-deps
+      - run: npm test -- --verbose
 
-      - name: Tests
-        run: echo "Hier kommen die Tests"
-
-  deployment:
+  build:
+    name: Build
     runs-on: ubuntu-latest
-    needs: [linting, testing]
-
+    needs: test
     steps:
-      - name: Deployment
-        run: echo "Deployment erfolgreich"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci --legacy-peer-deps
+      - run: npm run build
+      - name: Build speichern
+        uses: actions/upload-artifact@v4
+        with:
+          name: next-build
+          path: .next/
+          include-hidden-files: true
+          retention-days: 1
+
+  deploy:
+    name: Deployment (simuliert)
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Build holen
+        uses: actions/download-artifact@v4
+        with:
+          name: next-build
+          path: .next/
+      - run: ls .next
+      - run: echo "Deployment successful"
